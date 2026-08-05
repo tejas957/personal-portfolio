@@ -1,6 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
 
+const rawBase = import.meta.env.BASE_URL;
+const base = rawBase.endsWith('/') ? rawBase : `${rawBase}/`; // ensures '/personal-portfolio/' not '/personal-portfolio'
+
 // ---- EDIT ME: your data lives here ----
 const name = 'Tejas Senthil';
 const role = 'CS Student';
@@ -13,7 +16,7 @@ const links = [
 //Resume TO-DO
   { label: 'GitHub', href: 'https://github.com/tejas957' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/tejas-senthil-04a82a286/' },
-  { label: 'Resume', href: '/resume.pdf' },
+  { label: 'Resume', href: `${base}resume.pdf` },
   { label: 'Email', href: 'mailto:tejassenthilcollege@gmail.com' },
 ];
 
@@ -73,7 +76,7 @@ const skills = {
         <a href="#top" class="text-paper hover:text-amber transition-colors">~/portfolio</a>
         <div class="flex gap-6 text-muted">
           <a href="#projects" class="hover:text-amber transition-colors">projects</a>
-          <a href="/blog" class="hover:text-amber transition-colors">blog</a>
+          <a href={`${base}blog`} class="hover:text-amber transition-colors">blog</a>
           <a href="#skills" class="hover:text-amber transition-colors">skills</a>
           <a href="#contact" class="hover:text-amber transition-colors">contact</a>
         </div>
@@ -141,7 +144,7 @@ const skills = {
                 <a href={p.demo} class="text-amber hover:underline">demo →</a>
                 <a href={p.repo} class="text-muted hover:text-paper hover:underline">source →</a>
                 {p.blogSlug && (
-                  <a href={`/blog/${p.blogSlug}`} class="text-teal hover:underline">writeup →</a>
+                  <a href={`${base}blog/${p.blogSlug}`} class="text-teal hover:underline">writeup →</a>
                 )}
               </div>
             </li>
