@@ -1,0 +1,192 @@
+---
+import Base from '../layouts/Base.astro';
+
+// ---- EDIT ME: your data lives here ----
+const name = 'Tejas Senthil';
+const role = 'CS Student';
+const school = 'B.S. Computer Science, University of Texas Austin · Class of 2029';
+//TO-DO
+const blurb =
+  "I build things that sit close to the metal — schedulers, small compilers, the occasional distributed system that falls over gracefully instead of loudly. Currently interested in ML infra and how it fails at scale.";
+
+const links = [
+//Resume TO-DO
+  { label: 'GitHub', href: 'https://github.com/tejas957' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/tejas-senthil-04a82a286/' },
+  { label: 'Resume', href: '/resume.pdf' },
+  { label: 'Email', href: 'mailto:tejassenthilcollege@gmail.com' },
+];
+
+const projects = [
+  {
+    hash: 'a4d7709',
+    date: '2026-07',
+    subject: 'Rate Limiter + URL Shortener',
+    body: 'URL shortener with Java/Spring Boot, Redis caching, and a custom rate limiter; load tested with hey, sustaining 7,700+ requests/sec at 33ms p99 latency with zero failed requests',
+    tags: ['Backend Systems', 'Java', 'Testing'],
+    demo: 'https://railway.com/project/6042e311-545b-4412-a062-f1c8424d39e8?environmentId=d0668f08-23b1-4a0f-bbb3-3abfa1403947',
+    repo: 'https://github.com/tejas957/shortener.git',
+    blogSlug: 'url-shortener-blog', // matches a slug in src/data/posts.js — omit this line if there's no post
+  },
+  {
+    hash: '7c1b48d',
+    date: '2026-03',
+    subject: 'tinycc-subset: a C subset compiler targeting x86-64',
+    body: 'Hand-written lexer/parser, AST, and a naive-but-correct codegen. No LLVM — the point was learning what LLVM hides.',
+    tags: ['C', 'Compilers', 'Assembly'],
+    demo: 'https://github.com/yourname/tinycc-subset',
+    repo: 'https://github.com/yourname/tinycc-subset',
+  },
+  {
+    hash: 'e08d113',
+    date: '2025-11',
+    subject: 'latency-lens: a request-tracing dashboard for a microservice mesh',
+    body: 'Ingests OpenTelemetry spans, flags p99 outliers, and renders a live waterfall view. Built for a 6-service class project that got out of hand.',
+    tags: ['TypeScript', 'React', 'gRPC'],
+    demo: 'https://latency-lens.vercel.app',
+    repo: 'https://github.com/yourname/latency-lens',
+  },
+];
+
+const skills = {
+  Languages: ['Python', 'Go', 'TypeScript', 'C', 'Rust (learning)'],
+  Systems: ['Linux internals', 'Networking', 'Distributed systems', 'Databases'],
+  Tools: ['Docker', 'Git', 'PostgreSQL', 'gRPC', 'CI/CD'],
+};
+// ---- end editable data ----
+---
+<Base title={`${name} — Portfolio`}>
+  <div class="min-h-screen">
+    <!-- Nav -->
+    <header class="border-b border-line">
+      <nav class="mx-auto flex max-w-4xl items-center justify-between px-6 py-5 font-mono text-sm">
+        <a href="#top" class="text-paper hover:text-amber transition-colors">~/portfolio</a>
+        <div class="flex gap-6 text-muted">
+          <a href="#projects" class="hover:text-amber transition-colors">projects</a>
+          <a href="/blog" class="hover:text-amber transition-colors">blog</a>
+          <a href="#skills" class="hover:text-amber transition-colors">skills</a>
+          <a href="#contact" class="hover:text-amber transition-colors">contact</a>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Hero -->
+    <section id="top" class="mx-auto max-w-4xl px-6 pb-20 pt-16 sm:pt-24">
+      <p class="font-mono text-sm text-teal">
+        <span class="text-muted">you@portfolio</span><span class="text-muted">:</span><span class="text-amber">~</span><span class="text-muted">$</span>
+        whoami
+        <span class="typing-cursor" aria-hidden="true">▍</span>
+      </p>
+      <h1 class="mt-4 font-display text-5xl font-semibold leading-[1.05] sm:text-6xl">
+        {name}
+      </h1>
+      <p class="mt-3 font-mono text-sm text-amber sm:text-base">{role}</p>
+      <p class="mt-1 text-sm text-muted">{school}</p>
+      <p class="mt-6 max-w-xl text-base leading-relaxed text-paper/90 sm:text-lg">
+        {blurb}
+      </p>
+      <div class="mt-8 flex flex-wrap gap-4 font-mono text-sm">
+        {links.map((l) => (
+          <a
+            href={l.href}
+            class="rounded border border-line px-4 py-2 text-paper transition-colors hover:border-amber hover:text-amber"
+          >
+            {l.label}
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Projects: commit-log signature element -->
+    <section id="projects" class="border-t border-line">
+      <div class="mx-auto max-w-4xl px-6 py-16">
+        <h2 class="font-display text-2xl font-semibold">Projects</h2>
+        <p class="mt-2 font-mono text-xs text-muted">git log --oneline --stat</p>
+
+        <ol class="mt-8 space-y-0">
+          {projects.map((p, i) => (
+            <li class="relative border-l border-line pb-10 pl-8 last:pb-0">
+              <span
+                class="absolute -left-[7px] top-1.5 h-3 w-3 rounded-full border-2 border-amber bg-ink"
+                aria-hidden="true"
+              ></span>
+              <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 font-mono text-xs text-muted">
+                <span class="text-teal">commit {p.hash}</span>
+                <span>{p.date}</span>
+              </div>
+              <h3 class="mt-2 font-display text-xl font-semibold text-paper">
+                {p.subject}
+              </h3>
+              <p class="mt-2 max-w-xl text-sm leading-relaxed text-paper/80">
+                {p.body}
+              </p>
+              <div class="mt-3 flex flex-wrap gap-2">
+                {p.tags.map((t) => (
+                  <span class="rounded-full border border-line px-2.5 py-0.5 font-mono text-xs text-muted">
+                    {t}
+                  </span>
+                ))}
+              </div>
+              <div class="mt-4 flex gap-4 font-mono text-xs">
+                <a href={p.demo} class="text-amber hover:underline">demo →</a>
+                <a href={p.repo} class="text-muted hover:text-paper hover:underline">source →</a>
+                {p.blogSlug && (
+                  <a href={`/blog/${p.blogSlug}`} class="text-teal hover:underline">writeup →</a>
+                )}
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <!-- Skills -->
+    <section id="skills" class="border-t border-line">
+      <div class="mx-auto max-w-4xl px-6 py-16">
+        <h2 class="font-display text-2xl font-semibold">Skills</h2>
+        <div class="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-3">
+          {Object.entries(skills).map(([category, items]) => (
+            <div>
+              <p class="font-mono text-xs uppercase tracking-wide text-teal">{category}</p>
+              <ul class="mt-3 space-y-1.5 text-sm text-paper/85">
+                {items.map((s) => <li>{s}</li>)}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact / footer -->
+    <footer id="contact" class="border-t border-line">
+      <div class="mx-auto max-w-4xl px-6 py-16">
+        <h2 class="font-display text-2xl font-semibold">Get in touch</h2>
+        <p class="mt-3 max-w-md text-sm leading-relaxed text-paper/80">
+          Open to internships and collaboration on systems-y projects. The fastest way to reach me is email.
+        </p>
+        <div class="mt-6 flex flex-wrap gap-4 font-mono text-sm">
+          {links.map((l) => (
+            <a href={l.href} class="text-amber hover:underline">{l.label}</a>
+          ))}
+        </div>
+        <p class="mt-12 font-mono text-xs text-muted">
+          built with Astro + Tailwind · deployed on GitHub Pages
+        </p>
+      </div>
+    </footer>
+  </div>
+</Base>
+
+<style>
+  .typing-cursor {
+    display: inline-block;
+    color: theme('colors.amber');
+    animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .typing-cursor { animation: none; }
+  }
+</style>

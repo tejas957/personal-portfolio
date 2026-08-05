@@ -1,0 +1,66 @@
+<!--
+  This is a plain, standalone HTML file — Astro does NOT process it,
+  it just serves it as-is at /blog/raft-lite-writeup
+
+  That means:
+  - No layout, no shared nav/footer, no Tailwind classes available
+    automatically — this file needs its own <html>/<head>/<body> and
+    its own <style>, same as any HTML page you'd write on its own.
+  - To replace this with YOUR post: delete everything below and paste
+    in your own full HTML document, then save it as
+    src/pages/blog/your-slug.html (matching the `slug` you set in
+    src/data/posts.js).
+  - The inline <style> below just roughly matches the site's colors
+    so it doesn't look jarring — feel free to keep, change, or delete it.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Building raft-lite — Blog</title>
+  <style>
+    body {
+      background: #12141C;
+      color: #EDEDF2;
+      font-family: Georgia, 'Times New Roman', serif;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 4rem 1.5rem;
+      line-height: 1.7;
+    }
+    a { color: #E8A33D; }
+    h1 { font-size: 2rem; margin-bottom: 0.25rem; }
+    .meta { font-family: monospace; font-size: 0.85rem; color: #9195A6; margin-bottom: 2rem; }
+    pre {
+      background: #191C27;
+      border: 1px solid #2A2E3D;
+      padding: 1rem;
+      overflow-x: auto;
+      font-size: 0.85rem;
+    }
+    code { font-family: 'IBM Plex Mono', monospace; }
+  </style>
+</head>
+<body>
+  <p class="meta"><a href="/blog">&larr; back to blog</a></p>
+  <h1>Building raft-lite: what the Raft paper doesn't tell you</h1>
+  <p class="meta">2026-06-15</p>
+
+  <p>
+    This is placeholder content. Replace this whole file with your own
+    write-up — it can include code blocks, images (put them in
+    <code>public/</code> and reference as <code>/your-image.png</code>),
+    or anything else a normal HTML page can hold.
+  </p>
+
+  <pre><code>func (n *Node) requestVote(args RequestVoteArgs) RequestVoteReply {
+    // ...
+}</code></pre>
+
+  <p>
+    Delete this note and the comment at the top of the file once you've
+    swapped in your real content.
+  </p>
+</body>
+</html>

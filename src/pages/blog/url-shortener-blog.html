@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root{
+    --purple:#c77df2;
+    --purple-soft:#e3b8f7;
+    --purple-pale:#faf3fe;
+    --ink:#111114;
+    --gray:#6b6b76;
+    --card-border:#e3b8f7;
+    --inner-border:#111114;
+    --code-bg:#171320;
+    --code-text:#e8e3f2;
+    --code-key:#c99ef7;   /* keywords / annotations */
+    --code-str:#9ae6a8;   /* strings */
+    --code-com:#7d7691;   /* comments */
+    --code-num:#f2c078;   /* numbers / flags */
+    --bug-border:#f0a3a3;
+    --bug-bg:#fdf4f4;
+    --fix-border:#9ad3a8;
+    --fix-bg:#f3faf4;
+    --note-border:#f2cf8a;
+    --note-bg:#fdf9f0;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);
+    background:#12141c;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:680px;margin:0 auto;padding:48px 20px 96px;}
+  h1.post-title{font-size:34px;line-height:1.15;letter-spacing:-0.02em;margin:0 0 10px;font-weight:800;}
+  p.post-sub{color:var(--gray);font-size:16px;margin:0 0 40px;}
+  .banner{
+    background:var(--purple);
+    border:2px solid var(--ink);
+    border-radius:var(--radius);
+    padding:18px 24px;
+    margin:0 0 28px;
+  }
+  .banner span{color:#fff;font-size:24px;font-weight:800;letter-spacing:0.02em;}
+  .card{
+    border:2px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:24px;
+    margin:0 0 28px;
+    background:#fff;
+  }
+  .card.inner-dark{border:2px solid var(--inner-border);}
+  .eyebrow{
+    color:var(--purple);
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    margin:0 0 6px;
+  }
+  .card h2{font-size:24px;margin:0 0 12px;font-weight:800;letter-spacing:-0.01em;}
+  .card h3{font-size:18px;margin:22px 0 8px;font-weight:700;}
+  .card p{margin:0 0 14px;font-size:16px;}
+  .card p:last-child{margin-bottom:0;}
+  .card ul{margin:0 0 14px;padding-left:22px;}
+  .card li{margin:0 0 6px;}
+  .tool-list li b{font-weight:700;}
+  .skill-tag{display:inline-block;background:var(--purple-pale);border:1px solid var(--purple-soft);color:#8a3fbf;border-radius:999px;font-size:12px;font-weight:600;padding:1px 10px;margin-left:6px;vertical-align:middle;}
+  .quote{
+    border-left:4px solid var(--purple);
+    background:var(--purple-pale);
+    border-radius:8px;
+    padding:14px 18px;
+    margin:18px 0 0;
+    font-style:italic;
+  }
+  .quote .attr{display:block;font-style:normal;color:var(--gray);font-size:14px;margin-top:8px;}
+  /* jump button */
+  .jump-btn{
+    display:block;
+    text-align:center;
+    background:var(--purple);
+    color:#fff;
+    border:2px solid var(--ink);
+    border-radius:var(--radius);
+    padding:16px 20px;
+    font-size:18px;
+    font-weight:800;
+    text-decoration:none;
+    margin:0 0 12px;
+  }
+  .jump-btn:hover{filter:brightness(0.95);}
+  .or-line{text-align:center;color:var(--gray);font-size:15px;margin:0 0 40px;}
+  /* code blocks */
+  pre.code{
+    background:var(--code-bg);
+    color:var(--code-text);
+    border-radius:10px;
+    padding:16px 18px;
+    overflow-x:auto;
+    font-family:"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:13px;
+    line-height:1.55;
+    margin:0 0 14px;
+  }
+  pre.code .file{display:block;color:var(--code-com);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px;}
+  .k{color:var(--code-key);}   /* keyword/annotation */
+  .s{color:var(--code-str);}   /* string */
+  .c{color:var(--code-com);}   /* comment */
+  .n{color:var(--code-num);}   /* number/flag */
+  code.inline{
+    background:var(--purple-pale);
+    border:1px solid var(--purple-soft);
+    border-radius:6px;
+    padding:1px 6px;
+    font-family:"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:13.5px;
+    color:#7a2fb5;
+  }
+  /* side by side code + explanation on wide screens */
+  .split{display:flex;gap:16px;align-items:stretch;flex-wrap:wrap;margin:0 0 14px;}
+  .split>.code-col{flex:1 1 340px;min-width:0;}
+  .split>.code-col pre.code{height:100%;margin:0;}
+  .split>.text-col{flex:1 1 240px;min-width:220px;}
+  .split>.text-col p{margin:0 0 12px;font-size:15px;}
+  /* callouts */
+  .callout{border-radius:10px;padding:14px 18px;margin:0 0 14px;border:2px solid;}
+  .callout .label{display:block;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;}
+  .callout p{margin:0 0 10px;font-size:15px;}
+  .callout p:last-child{margin-bottom:0;}
+  .callout pre.code{margin:10px 0;}
+  .bug{border-color:var(--bug-border);background:var(--bug-bg);}
+  .bug .label{color:#c04747;}
+  .fix{border-color:var(--fix-border);background:var(--fix-bg);}
+  .fix .label{color:#2f8a4c;}
+  .note{border-color:var(--note-border);background:var(--note-bg);}
+  .note .label{color:#b07e1f;}
+  /* flow diagram */
+  .flow{display:flex;flex-direction:column;gap:6px;margin:18px 0 0;}
+  .flow .step{border:2px solid var(--ink);border-radius:10px;padding:10px 14px;font-size:14.5px;background:#fff;}
+  .flow .arrow{text-align:center;color:var(--purple);font-weight:800;line-height:1;}
+  .divider{border:none;border-top:1px solid #e6e6ea;margin:40px 0;}
+  table.vars{width:100%;border-collapse:collapse;font-size:13px;margin:0 0 14px;}
+  table.vars th,table.vars td{border:1px solid var(--purple-soft);padding:8px 10px;text-align:left;vertical-align:top;word-break:break-all;}
+  table.vars th{background:var(--purple-pale);font-weight:700;}
+  table.vars td code{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12px;}
+  html{scroll-behavior:smooth;}
+  @media (max-width:640px){
+    h1.post-title{font-size:28px;}
+    .split{flex-direction:column;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+ 
+
+  <div class="banner"><span>THE BUILD LOG</span></div>
+
+  <!-- BACKGROUND / INSPO -->
+  <div class="card">
+    <p class="eyebrow">Background / Inspo</p>
+    <h2>Why this project</h2>
+    <p>Gain some experience in backends/systems. I hadn't touched most of this stack before, so this whole build doubled as a crash course.</p>
+  </div>
+
+  <!-- ORIGINAL IDEA -->
+  <div class="card">
+    <p class="eyebrow">The Original Idea</p>
+    <h2>What I set out to build</h2>
+    <p>Client hits your server → app asks Redis "are you rate-limited?" → if no, app asks Redis "do you have this URL cached?" → if not, fall back to Postgres → send the result back, caching it in Redis on the way.</p>
+    <div class="flow">
+      <div class="step"> Client hits your server</div>
+      <div class="arrow">↓</div>
+      <div class="step"> Redis: "are you rate-limited?" — if yes, blocked (429)</div>
+      <div class="arrow">↓</div>
+      <div class="step"> Redis: "do you have this URL cached?"</div>
+      <div class="arrow">↓ &nbsp;cache miss</div>
+      <div class="step"> Postgres: pull the URL, send it back, cache it in Redis on the way</div>
+    </div>
+  </div>
+
+  <!-- TOOLS + SKILL LEVEL -->
+  <div class="card">
+    <p class="eyebrow">AI Model + Tools</p>
+    <h2>What I'm working with (and how much I actually know)</h2>
+    <p>Using <b>Claude Sonnet 5</b> as my AI pair the whole way through.</p>
+    <p><b>Java</b> <span class="skill-tag">intermediate</span></p>
+    <p>Everything below: <span class="skill-tag">beginner</span></p>
+    <ul class="tool-list">
+      <li><b>Spring Boot</b> – turns your Java code into a running web server with minimal setup.</li>
+      <li><b>REST API</b> – a clean way to expose your app's actions over HTTP using GET, POST, etc.</li>
+      <li><b>PostgreSQL</b> – permanent storage that remembers your data even after a restart.</li>
+      <li><b>Redis</b> – a super-fast, temporary store for caching and rate-limit counters.</li>
+      <li><b>Token Bucket</b> – lets requests through until a refillable "bucket" of tokens runs dry.</li>
+      <li><b>Sliding Window</b> – counts recent requests by exact timestamp for more precise rate limiting.</li>
+      <li><b>Load testing</b> – hammering your own server to see how much traffic it can handle.</li>
+      <li><b>Deployment</b> – putting your app on a public server so anyone can access it.</li>
+    </ul>
+  </div>
+
+  <a class="jump-btn" href="#final-build">See the final build ↓</a>
+  <p class="or-line">…or follow along to see my process, explanations, debugging and thoughts 👇</p>
+
+  <hr class="divider">
+
+  <!-- ============ PROCESS ============ -->
+
+  <div class="card">
+    <p class="eyebrow">Setup</p>
+    <h2>Step 1 — Docker + the project skeleton</h2>
+    <p>Downloaded Docker Desktop from the internet and did the tutorial container. Basically what it is is it helps manage hosting and testing.</p>
+    <p>I then generated the project skeleton on <b>start.spring.io</b> using these settings:</p>
+    <ul>
+      <li><b>Project:</b> Maven</li>
+      <li><b>Language:</b> Java</li>
+      <li><b>Spring Boot version:</b> latest non-SNAPSHOT stable (whatever's default)</li>
+      <li><b>Group:</b> com.yourname (use your actual name/handle, lowercase, no spaces)</li>
+      <li><b>Artifact:</b> shortener</li>
+      <li><b>Java version:</b> 17 (or whatever you installed)</li>
+      <li><b>Dependencies:</b> Spring Web · Spring Data JPA · PostgreSQL Driver · Lombok</li>
+    </ul>
+    <p>Basically what this does is it generates the specific file structure that the Java tools are built to expect; every single Spring project uses this.</p>
+  </div>
+
+  <div class="card">
+    <p class="eyebrow">First Boot</p>
+    <h2>Step 2 — Booting up Spring (and the first two errors)</h2>
+    <p>Next we booted up Spring by opening <code class="inline">ShortenerApplication.java</code>. Here I ran into a series of errors that had me skipping around the steps that Claude originally had me follow.</p>
+
+    <div class="callout bug">
+      <span class="label">Bug #1 — Wrong JDK</span>
+      <p>Instead of the expected <code class="inline">Started ShortenerApplication in X seconds</code>, I got:</p>
+      <pre class="code">Module shortener SDK 1.8 is not compatible with the source version 17.
+Upgrade Module SDK in project settings to 17 or higher. Open project settings</pre>
+    </div>
+    <div class="callout fix">
+      <span class="label">The Fix</span>
+      <p>This was because I was using Temurin 1.8 instead of Java 17, a simple fix. I went to <b>File → Project Structure → Project Settings → Project → Add SDK</b>, where I already had aarch64 Java 24 downloaded. Then I set <b>Language level: 17</b>, applied the change, and re-ran it.</p>
+    </div>
+
+    <div class="callout bug">
+      <span class="label">Bug #2 — No DataSource</span>
+      <p>Fixing the first error led me straight into a second one:</p>
+      <pre class="code">***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+Failed to configure a DataSource: 'url' attribute is not specified
+and no embedded datasource could be configured.
+
+Reason: Failed to determine a suitable driver class</pre>
+      <p>Basically what is happening here is that Spring Boot sees the Postgres driver + JPA dependencies in our classpath (already written in our <code class="inline">pom.xml</code> from the dependency selections) and assumes "this app wants a database." But with no URL/credentials given, there is nothing to connect to, so it fails with the error. <b>Claude assumed there were no DB dependencies.</b></p>
+    </div>
+    <div class="callout fix">
+      <span class="label">The Fix (part 1)</span>
+      <p>Get Postgres up and running locally, listening on port 5432:</p>
+      <pre class="code">docker run --name shortener-db <span class="n">-e</span> POSTGRES_PASSWORD=<span class="s">pass</span> <span class="n">-e</span> POSTGRES_DB=<span class="s">shortener</span> <span class="n">-p</span> 5432:5432 <span class="n">-d</span> postgres</pre>
+      <p>And since Spring Boot doesn't know how to connect to a database without the connection details, we filled <code class="inline">application.properties</code> with them:</p>
+      <pre class="code">spring.datasource.url=<span class="s">jdbc:postgresql://localhost:5432/shortener</span>
+spring.datasource.username=<span class="s">postgres</span>
+spring.datasource.password=<span class="s">pass</span>
+spring.jpa.hibernate.ddl-auto=<span class="s">update</span></pre>
+    </div>
+
+    <div class="callout bug">
+      <span class="label">Bug #2, still — Same error??</span>
+      <p>Yet even after this fix I had the same error. Pasting the error into Claude, it said it's likely Java isn't connecting to our Docker container at all and is hitting a <em>different</em> Postgres server also listening on port 5432. So we ran:</p>
+      <pre class="code">lsof <span class="n">-i</span> :5432</pre>
+      <p>Which led us to find that there was in fact a <b>native Postgres process running directly on my Mac</b> that was stealing the Java app's connection.</p>
+    </div>
+    <div class="callout fix">
+      <span class="label">The Real Fix</span>
+      <p>Move our Docker container to port 5433. To do this we recreated the container:</p>
+      <pre class="code">docker rm <span class="n">-f</span> shortener-db
+docker run --name shortener-db <span class="n">-e</span> POSTGRES_USER=<span class="s">postgres</span> <span class="n">-e</span> POSTGRES_PASSWORD=<span class="s">pass</span> <span class="n">-e</span> POSTGRES_DB=<span class="s">shortener</span> <span class="n">-p</span> 5433:5432 <span class="n">-d</span> postgres</pre>
+      <p>Then updated the line in <code class="inline">application.properties</code>:</p>
+      <pre class="code">spring.datasource.url=<span class="s">jdbc:postgresql://localhost:5433/shortener</span></pre>
+      <p><b>In summary: our main error was a port conflict between a local install and a container.</b></p>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="eyebrow">Endpoint 0</p>
+    <h2>Step 3 — The /ping endpoint</h2>
+    <div class="split">
+      <div class="code-col">
+        <pre class="code"><span class="file">src/main/java/com/yourname/shortener/PingController.java</span><span class="k">package</span> com.yourname.shortener;
+
+<span class="k">import</span> org.springframework.web.bind.annotation.GetMapping;
+<span class="k">import</span> org.springframework.web.bind.annotation.RestController;
+
+<span class="k">@RestController</span>
+<span class="k">public class</span> PingController {
+    <span class="k">@GetMapping</span>(<span class="s">"/ping"</span>)
+    <span class="k">public</span> String ping() {
+        <span class="k">return</span> <span class="s">"pong"</span>;
+    }
+}</pre>
+      </div>
+      <div class="text-col">
+        <p>What happens is that <code class="inline">@RestController</code> tells Spring that PingController handles web requests, and when a GET request hits <code class="inline">/ping</code>, run this method, which in our case returns <b>pong</b>.</p>
+        <p>Then we ran the app and ran this in the terminal:</p>
+        <pre class="code">curl http://localhost:8080/ping</pre>
+        <p>…which returned <code class="inline">pong</code>. ✅</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="eyebrow">Database Layer</p>
+    <h2>Step 4 — The Url entity</h2>
+    <div class="split">
+      <div class="code-col">
+        <pre class="code"><span class="file">Url.java</span><span class="k">package</span> com.yourname.shortener;
+
+<span class="k">import</span> jakarta.persistence.*;
+<span class="k">import</span> lombok.Data;
+<span class="k">import</span> java.time.LocalDateTime;
+
+<span class="k">@Entity</span>
+<span class="k">@Data</span>
+<span class="k">public class</span> Url {
+    <span class="k">@Id</span>
+    <span class="k">@GeneratedValue</span>(strategy = GenerationType.IDENTITY)
+    <span class="k">private</span> Long id;
+
+    <span class="k">private</span> String shortCode;
+    <span class="k">private</span> String longUrl;
+    <span class="k">private</span> LocalDateTime createdAt = LocalDateTime.now();
+}</pre>
+      </div>
+      <div class="text-col">
+        <p><code class="inline">@Entity</code> tells Spring "this class maps to a database table," where each field is a column.</p>
+        <p><code class="inline">@Id</code> + <code class="inline">@GeneratedValue</code> means the database auto-assigns IDs.</p>
+        <p><code class="inline">@Data</code> (Lombok) auto-generates getters/setters.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="eyebrow">Database Layer</p>
+    <h2>Step 5 — The repository (the thing that talks to the database)</h2>
+    <div class="split">
+      <div class="code-col">
+        <pre class="code"><span class="file">UrlRepository.java</span><span class="k">package</span> com.yourname.shortener;
+
+<span class="k">import</span> org.springframework.data.jpa.repository.JpaRepository;
+<span class="k">import</span> java.util.Optional;
+
+<span class="k">public interface</span> UrlRepository <span class="k">extends</span> JpaRepository&lt;Url, Long&gt; {
+    Optional&lt;Url&gt; findByShortCode(String shortCode);
+}</pre>
+      </div>
+      <div class="text-col">
+        <p>You write an interface (general template) without an implementation, and Spring will generate the actual save/find/delete logic for you at runtime.</p>
+        <p><code class="inline">findByShortCode</code> works just because of the method name: Spring reads the method name at startup, matches its words against the entity's fields, and uses that to build a real database query automatically, so <code class="inline">findByShortCode</code> gets turned into <code class="inline">SELECT where shortCode = ?</code> without you ever writing the logic yourself.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="eyebrow">The Core</p>
+    <h2>Step 6 — The controller: creating short links and using them</h2>
+    <pre class="code"><span class="file">UrlController.java</span><span class="k">package</span> com.yourname.shortener;
+
+<span class="k">import</span> org.springframework.http.HttpStatus;
+<span class="k">import</span> org.springframework.http.ResponseEntity;
+<span class="k">import</span> org.springframework.web.bind.annotation.*;
+<span class="k">import</span> java.util.UUID;
+
+<span class="k">@RestController</span>
+<span class="k">public class</span> UrlController {
+    <span class="k">private final</span> UrlRepository repo;
+
+    <span class="k">public</span> UrlController(UrlRepository repo) {
+        <span class="k">this</span>.repo = repo;
+    }
+
+    <span class="k">@PostMapping</span>(<span class="s">"/shorten"</span>)
+    <span class="k">public</span> String shorten(<span class="k">@RequestBody</span> ShortenRequest request) {
+        Url url = <span class="k">new</span> Url();
+        url.setLongUrl(request.longUrl());
+        url.setShortCode(UUID.randomUUID().toString().substring(<span class="n">0</span>, <span class="n">6</span>));
+        repo.save(url);
+        <span class="k">return</span> url.getShortCode();
+    }
+
+    <span class="k">@GetMapping</span>(<span class="s">"/{shortCode}"</span>)
+    <span class="k">public</span> ResponseEntity&lt;Void&gt; redirect(<span class="k">@PathVariable</span> String shortCode) {
+        Url url = repo.findByShortCode(shortCode)
+            .orElseThrow(() -&gt; <span class="k">new</span> RuntimeException(<span class="s">"Not found"</span>));
+        <span class="k">return</span> ResponseEntity.status(HttpStatus.FOUND)
+            .header(<span class="s">"Location"</span>, url.getLongUrl())
+            .build();
+    }
+
+    <span class="k">public record</span> ShortenRequest(String longUrl) {}
+}</pre>
+    <p><code class="inline">@RequestBody</code> tells Spring "take the JSON from the request and turn it into a ShortenRequest object."</p>
+    <h3>Endpoint 1: POST /shorten — create a short link</h3>
+    <p>Store the long URL in a new Url object and generate a random code by making a UUID (long random string), chopping the first 6 chars (short code), and sending it back to the requester, then saving the object to the database using the repository.</p>
+    <h3>Endpoint 2: GET /{shortCode} — use a short link</h3>
+    <p>If someone visits <code class="inline">yoursite.com/(shortcode)</code>, <code class="inline">@PathVariable</code> grabs the shortCode and looks up the database for a Url row with that code. If nothing is found, it returns an error. Otherwise:</p>
+    <pre class="code"><span class="k">return</span> ResponseEntity.status(HttpStatus.FOUND)
+    .header(<span class="s">"Location"</span>, url.getLongUrl())
+    .build();</pre>
+    <p>This builds an HTTP response with status code <b>302 (Found)</b> and sets a Location header to the original long URL. Browsers understand "302 + Location header" means <em>go here instead</em> The browser instantly jumps to the long URL. No page is shown, it just redirects.</p>
+  </div>
+  <div class="card">
+    <p class="eyebrow">Caching</p>
+    <h2>Step 7 — Adding Redis caching</h2>
+    <p>Next we add the Redis dependency from Spring's Redis client library so Java code can talk to Redis the same way as Postgres. Added this in the <code class="inline">pom.xml</code> in the <code class="inline">&lt;dependencies&gt;</code> block:</p>
+    <pre class="code">&lt;<span class="k">dependency</span>&gt;
+    &lt;<span class="k">groupId</span>&gt;org.springframework.boot&lt;/<span class="k">groupId</span>&gt;
+    &lt;<span class="k">artifactId</span>&gt;spring-boot-starter-data-redis&lt;/<span class="k">artifactId</span>&gt;
+&lt;/<span class="k">dependency</span>&gt;</pre>
+    <p>Then point Spring Boot at Redis by adding this to <code class="inline">application.properties</code>:</p>
+    <pre class="code">spring.data.redis.host=<span class="s">localhost</span>
+spring.data.redis.port=<span class="s">6380</span></pre>
+    <p>Then in <code class="inline">UrlController.java</code> the redirect logic becomes cache-aware:</p>
+    <pre class="code"><span class="file">UrlController.java (updated redirect)</span><span class="k">private final</span> StringRedisTemplate redis;
+
+<span class="k">public</span> UrlController(UrlRepository repo, StringRedisTemplate redis) {
+    <span class="k">this</span>.repo = repo;
+    <span class="k">this</span>.redis = redis;
+}
+
+<span class="k">@GetMapping</span>(<span class="s">"/{shortCode}"</span>)
+<span class="k">public</span> ResponseEntity&lt;Void&gt; redirect(<span class="k">@PathVariable</span> String shortCode) {
+    String cacheKey = <span class="s">"url:"</span> + shortCode;
+
+    <span class="c">// 1. Check Redis first</span>
+    String cachedUrl = redis.opsForValue().get(cacheKey);
+    <span class="k">if</span> (cachedUrl != <span class="k">null</span>) {
+        System.out.println(<span class="s">"CACHE HIT for "</span> + shortCode);
+        <span class="k">return</span> ResponseEntity.status(HttpStatus.FOUND).header(<span class="s">"Location"</span>, cachedUrl).build();
+    }
+
+    <span class="c">// 2. Fall back to Postgres</span>
+    System.out.println(<span class="s">"CACHE MISS for "</span> + shortCode + <span class="s">" — checking Postgres"</span>);
+    Url url = repo.findByShortCode(shortCode)
+        .orElseThrow(() -&gt; <span class="k">new</span> RuntimeException(<span class="s">"Not found"</span>));
+
+    <span class="c">// 3. Write into Redis for next time (expires in 1 hour)</span>
+    redis.opsForValue().set(cacheKey, url.getLongUrl(), <span class="n">1</span>, TimeUnit.HOURS);
+    <span class="k">return</span> ResponseEntity.status(HttpStatus.FOUND).header(<span class="s">"Location"</span>, url.getLongUrl()).build();
+}</pre>
+    <p><code class="inline">StringRedisTemplate</code> is Spring's built-in tool for storing and reading key-value pairs in Redis. When a search is made, <code class="inline">redirect</code> creates a cacheKey and first checks for it in the cached temporary Redis database if it has been called recently, and if not, it then pulls the request from the Postgres database and writes it into Redis for next time with the cacheKey, with an auto-expiration period.</p>
+    <h3>Testing the cache</h3>
+    <pre class="code"><span class="c"># 1. Create a short code, note the code returned</span>
+curl <span class="n">-X</span> POST http://localhost:8080/shorten <span class="n">-H</span> <span class="s">"Content-Type: application/json"</span> <span class="n">-d</span> <span class="s">'{"longUrl":"https://example.com"}'</span>
+
+<span class="c"># 2. Hit it once; check the IntelliJ console, you should see "CACHE MISS"</span>
+curl <span class="n">-i</span> http://localhost:8080/YOURCODE
+
+<span class="c"># 3. Hit it again, same code; you should now see "CACHE HIT"</span>
+curl <span class="n">-i</span> http://localhost:8080/YOURCODE</pre>
+    <div class="callout note">
+      <span class="label">⚠️ 20 minutes of my life</span>
+      <p>Make sure to check for this cache hit or miss in the <b>console tab</b>, NOT the terminal output. I spent like 20 minutes thinking the code wasn't working.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="eyebrow">Rate Limiting</p>
+    <h2>Step 8 — The rate limiter</h2>
+    <p>Now we use Redis to track request counts, store that count for a certain time so that multiple servers can use it, then reset after the data automatically expires after n seconds.</p>
+    <p>The way we do this is using a <b>filter</b>, a piece of code that runs on every request to check if the client's IP counter is below the rate limit. This is a simplified <b>fixed-window counter</b>, not a "true" token bucket, backed by Redis.</p>
+    <div class="split">
+      <div class="code-col">
+        <pre class="code"><span class="file">RateLimitFilter.java</span><span class="k">package</span> com.yourname.shortener;
+
+<span class="k">import</span> jakarta.servlet.*;
+<span class="k">import</span> jakarta.servlet.http.*;
+<span class="k">import</span> org.springframework.data.redis.core.StringRedisTemplate;
+<span class="k">import</span> org.springframework.stereotype.Component;
+<span class="k">import</span> java.io.IOException;
+<span class="k">import</span> java.util.concurrent.TimeUnit;
+
+<span class="k">@Component</span>
+<span class="k">public class</span> RateLimitFilter <span class="k">implements</span> Filter {
+    <span class="k">private final</span> StringRedisTemplate redis;
+
+    <span class="k">public</span> RateLimitFilter(StringRedisTemplate redis) {
+        <span class="k">this</span>.redis = redis;
+    }
+
+    <span class="k">@Override</span>
+    <span class="k">public void</span> doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
+            <span class="k">throws</span> IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest) req;
+        HttpServletResponse response = (HttpServletResponse) res;
+
+        String key = <span class="s">"rate:"</span> + request.getRemoteAddr();
+        Long count = redis.opsForValue().increment(key);
+
+        <span class="k">if</span> (count == <span class="n">1</span>) {
+            redis.expire(key, <span class="n">60</span>, TimeUnit.SECONDS);
+        }
+
+        <span class="k">if</span> (count &gt; <span class="n">10</span>) {
+            response.setStatus(<span class="n">429</span>);
+            <span class="k">return</span>; <span class="c">// blocks the request</span>
+        }
+
+        chain.doFilter(req, res);
+    }
+}</pre>
+      </div>
+      <div class="text-col">
+        <p><code class="inline">@Component</code> tells Spring to run and manage it automatically so that you don't have to wire it into every controller; it applies globally.</p>
+        <p><code class="inline">redis.opsForValue().increment(key)</code> atomically adds 1.</p>
+        <p><code class="inline">if (count == 1)</code> happens on the first request — that's when we set the expiration.</p>
+        <p>Returning early (without calling <code class="inline">chain.doFilter</code>) is what actually blocks the request, so the controller code never runs.</p>
+      </div>
+    </div>
+    <h3>What is atomic vs racing?</h3>
+    <p>When you have two requests, instead of:</p>
+    <pre class="code"><span class="c">Request A: reads value → 5
+Request B: reads value → 5 (B read before A wrote back)
+Request A: computes 5 + 1 = 6, writes 6
+Request B: computes 5 + 1 = 6, writes 6
+Final value: 6</span></pre>
+    <p>Even though two requests happened, the counter only went up by one. Atomic does:</p>
+    <pre class="code"><span class="c">Request A: increment() → Redis does read+write as one indivisible step → returns 6
+Request B: increment() → Redis does read+write as one indivisible step → returns 7
+Final value: 7</span></pre>
+    <h3>Testing the limiter</h3>
+    <p>To test, we hammer the same endpoint more than 10 times quickly:</p>
+    <pre class="code"><span class="k">for</span> i <span class="k">in</span> {1..15}; <span class="k">do</span> curl <span class="n">-s</span> <span class="n">-o</span> /dev/null <span class="n">-w</span> <span class="s">"%{http_code}\n"</span> http://localhost:8080/ping; <span class="k">done</span></pre>
+    <p><code class="inline">200</code> will be printed 10 times, then <code class="inline">429</code> for the rest, meaning you've reached your limit and requests are blocked.</p>
+  </div>
+
+  <div class="card">
+    <p class="eyebrow">Load Testing</p>
+    <h2>Step 9 — Load testing (and accidentally DDoSing example.com)</h2>
+    <p>To measure, we will use <b>throughput</b> (requests/sec your server can handle) and <b>p99 latency</b> (the response time that 99% of requests finish faster than).</p>
+    <p>We'll use <b>hey</b>, which we'll install using:</p>
+    <pre class="code">brew install hey</pre>
+    <p>We'll raise the rate limit to test the steady-state rate. Then we create one short code and hit it once first so it's cached in Redis, to test the fast path:</p>
+    <pre class="code">CODE=$(curl <span class="n">-s</span> <span class="n">-X</span> POST http://localhost:8080/shorten <span class="n">-H</span> <span class="s">"Content-Type: application/json"</span> <span class="n">-d</span> <span class="s">'{"longUrl":"https://example.com"}'</span>)
+curl <span class="n">-s</span> http://localhost:8080/$CODE &gt; /dev/null</pre>
+    <p>Now we run the actual load test: 2000 total requests, 50 concurrent at a time:</p>
+    <pre class="code">hey <span class="n">-n</span> 2000 <span class="n">-c</span> 50 http://localhost:8080/$CODE</pre>
+    <div class="callout bug">
+      <span class="label"> Bug — NaN everywhere</span>
+      <p>Here we ran into some unexpected output showing some errors:</p>
+      <pre class="code">Summary:
+  Total:        29.8257 secs
+  Slowest:      0.0000 secs
+  Fastest:      0.0000 secs
+  Average:      NaN secs
+  Requests/sec: 67.0563
+
+Error distribution:
+  [410]  Get "http://localhost:8080/b341c9": dial tcp [::1]:8080: connect: connection refused
+  [1]    Get "http://localhost:8080/b341c9": read tcp: connection reset by peer
+  [1]    Get "https://example.com": context deadline exceeded
+  [1588] Get "https://example.com": remote error: tls: handshake failure</pre>
+      <p>Claude explained that according to the error distribution, most of the errors were because <b>hey automatically followed the 302 redirect and hammered example.com itself with 1,588 requests (oops!)</b> instead of my server.</p>
+    </div>
+    <div class="callout fix">
+      <span class="label">The Fix</span>
+      <p>So we disabled redirect-following and ran the test:</p>
+      <pre class="code">curl <span class="n">-s</span> http://localhost:8080/$CODE &gt; /dev/null
+hey <span class="n">-n</span> 2000 <span class="n">-c</span> 50 <span class="n">-disable-redirects</span> http://localhost:8080/$CODE</pre>
+    </div>
+    <p>And these were our results:</p>
+    <pre class="code">Summary:
+  Total:        0.2596 secs
+  Slowest:      0.0611 secs
+  Fastest:      0.0006 secs
+  Average:      0.0060 secs
+  <span class="n">Requests/sec: 7705.2572</span>
+
+Response time histogram:
+  0.001 [1]    |
+  0.007 [1544] |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.013 [355]  |■■■■■■■■■
+  0.019 [38]   |■
+  0.025 [8]    |
+  0.031 [6]    |
+  0.037 [45]   |■
+  0.061 [3]    |
+
+Latency distribution:
+  50% in 0.0047 secs
+  90% in 0.0088 secs
+  95% in 0.0127 secs
+  <span class="n">99% in 0.0331 secs</span>
+
+Status code distribution:
+  [302] 2000 responses</pre>
+    <p>I was happy with these results. 🎉</p>
+  </div>
+
+  <div class="card">
+    <p class="eyebrow">Deployment</p>
+    <h2>Step 10 — Deploying to Railway</h2>
+    <p>Now it's time to deploy. I pushed my latest code to GitHub:</p>
+    <pre class="code">git add .
+git commit <span class="n">-m</span> <span class="s">"load testing complete, rate limit restored"</span>
+git push</pre>
+    <p>I'm using <b>Railway</b> to host. Go to railway.app → sign up with GitHub → New Project → Deploy from GitHub repo → select your shortener repo. Railway auto-detects it's a Maven/Spring Boot app and builds it.</p>
+    <p>Then we add the Postgres and Redis databases. Railway automatically generates connection credentials, and you don't need to manage Docker containers here.</p>
+    <div class="callout note">
+      <span class="label">Note — I did this wrong first</span>
+      <p>What I do in this next step is <b>NOT</b> the way I am supposed to do it. Claude had originally guided me this way, but I ran into errors and learned more about the conventions. I did want to be true to my process and log it. You will see later in the blog the correct way to do it, and I will point it out as well.</p>
+    </div>
+    <p>In <code class="inline">application.properties</code>, I updated it to read environment variables:</p>
+    <pre class="code">spring.datasource.url=<span class="s">${DATABASE_URL}</span>
+spring.datasource.username=<span class="s">${DATABASE_USERNAME}</span>
+spring.datasource.password=<span class="s">${DATABASE_PASSWORD}</span>
+spring.jpa.hibernate.ddl-auto=<span class="s">update</span>
+spring.data.redis.host=<span class="s">${REDISHOST}</span>
+spring.data.redis.port=<span class="s">${REDISPORT}</span>
+spring.data.redis.password=<span class="s">${REDISPASSWORD}</span></pre>
+    <p>Both database info and Redis info were found by clicking on the respective database box and going to the Variables tab. I then committed and pushed this change (Railway auto-redeploys on every push to your connected branch).</p>
+    <div class="callout note">
+      <span class="label">Good practice</span>
+      <p>You should never commit passwords/confidential info publicly, put it in <code class="inline">.gitignore</code> if needed.</p>
+    </div>
+    <div class="callout bug">
+      <span class="label">Bug — The shortener keeps crashing</span>
+      <p>All 3 services were online, however I noticed my shortener keeps crashing. The Railway logs showed a <b>"no datasource configured"</b> error, meaning Railway needs the databases explicitly referenced as variables in the app service's own Variables tab.</p>
+      <p>Quick explanation as to why it errors: there is a mismatch between Postgres's <code class="inline">DATABASE_URL</code> format and Spring Boot's respective <code class="inline">spring.datasource.url</code> JDBC format. Therefore we'll just build the JDBC URL from the individual pieces the Postgres database generates on Railway.</p>
+    </div>
+    <div class="callout fix">
+      <span class="label">The Fix — the correct way</span>
+      <p>First, delete all the info lines in <code class="inline">application.properties</code>, leaving just these two lines:</p>
+      <pre class="code">spring.application.name=<span class="s">shortener</span>
+spring.jpa.hibernate.ddl-auto=<span class="s">update</span></pre>
+      <p>Then add these variables in the <b>app's Variables tab</b> in Railway:</p>
+      <table class="vars">
+        <tr><th>Variable name</th><th>Value</th></tr>
+        <tr><td><code>SPRING_DATASOURCE_URL</code></td><td><code>jdbc:postgresql://${{Postgres.PGHOST}}:${{Postgres.PGPORT}}/${{Postgres.PGDATABASE}}</code></td></tr>
+        <tr><td><code>SPRING_DATASOURCE_USERNAME</code></td><td><code>${{Postgres.PGUSER}}</code></td></tr>
+        <tr><td><code>SPRING_DATASOURCE_PASSWORD</code></td><td><code>${{Postgres.PGPASSWORD}}</code></td></tr>
+        <tr><td><code>SPRING_DATA_REDIS_HOST</code></td><td><code>${{Redis.REDISHOST}}</code></td></tr>
+        <tr><td><code>SPRING_DATA_REDIS_PORT</code></td><td><code>${{Redis.REDISPORT}}</code></td></tr>
+        <tr><td><code>SPRING_DATA_REDIS_PASSWORD</code></td><td><code>${{Redis.REDISPASSWORD}}</code></td></tr>
+      </table>
+      <p>And to fix the exposed password, I regenerated the passwords in Railway.</p>
+    </div>
+    <p>Finally, to test if it's working: find the URL in <b>app service → Settings → Networking → Generate Domain</b>, then run:</p>
+    <pre class="code">curl <span class="n">-i</span> https://shortener-public-url/ping</pre>
+  </div>
+  <hr class="divider">
+
+  <!-- ============ FINAL BUILD ============ -->
+  <div id="final-build"></div>
+  <div class="banner"><span>THE FINAL BUILD</span></div>
+
+  <div class="card">
+    <p class="eyebrow">Final Product</p>
+    <h2>What the finished project looks like</h2>
+    <p>A live, publicly deployed URL shortener: you POST a long URL to <code class="inline">/shorten</code>, it hands you back a 6-character code, and anyone who visits <code class="inline">yourdomain/{code}</code> gets instantly 302-redirected to the original link. Redis serves cached lookups so repeat hits never touch Postgres, and a Redis-backed rate limiter blocks any IP that sends more than the allowed requests per window with a 429. All of it runs on Railway with managed Postgres + Redis.</p>
+    <div class="quote">
+      "Built a URL shortener with Java/Spring Boot, Redis caching, and a custom rate limiter; load tested with hey, sustaining 7,700+ requests/sec at 33ms p99 latency with zero failed requests"
+      <span class="attr">— the resume line this project earned</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="eyebrow">The Clean Path</p>
+    <h2>How I'd replicate it with zero snags</h2>
+    <p>This is the step-by-step that I found worked for me, with all the fixes baked in from the start, so you skip every error I hit.</p>
+
+    <h3>1. Setup</h3>
+    <p>Install Docker Desktop and Java 17+. Generate the skeleton on <b>start.spring.io</b>: Maven · Java · latest stable Spring Boot · Artifact: shortener · Java 17 · Dependencies: Spring Web, Spring Data JPA, PostgreSQL Driver, Lombok. In IntelliJ, before running anything, set the Project SDK and Language level to 17+ (<b>File → Project Structure</b>) so you don't hit the SDK 1.8 error.</p>
+
+    <h3>2. Databases on non-default ports</h3>
+    <p>Check what's already on the default ports first (<code class="inline">lsof -i :5432</code>) — a native Postgres install will silently steal your app's connection. Just start on 5433/6380 from the jump:</p>
+    <pre class="code">docker run --name shortener-db <span class="n">-e</span> POSTGRES_USER=<span class="s">postgres</span> <span class="n">-e</span> POSTGRES_PASSWORD=<span class="s">pass</span> <span class="n">-e</span> POSTGRES_DB=<span class="s">shortener</span> <span class="n">-p</span> 5433:5432 <span class="n">-d</span> postgres
+docker run --name shortener-redis <span class="n">-p</span> 6380:6379 <span class="n">-d</span> redis</pre>
+    <p>Then in <code class="inline">application.properties</code>:</p>
+    <pre class="code">spring.datasource.url=<span class="s">jdbc:postgresql://localhost:5433/shortener</span>
+spring.datasource.username=<span class="s">postgres</span>
+spring.datasource.password=<span class="s">pass</span>
+spring.jpa.hibernate.ddl-auto=<span class="s">update</span>
+spring.data.redis.host=<span class="s">localhost</span>
+spring.data.redis.port=<span class="s">6380</span></pre>
+
+    <h3>3. Build the app in this order</h3>
+    <p><b>PingController.java</b> (sanity check the server runs) → <b>Url.java</b> entity → <b>UrlRepository.java</b> → <b>UrlController.java</b> with both endpoints → add the <code class="inline">spring-boot-starter-data-redis</code> dependency → cache-aware redirect → <b>RateLimitFilter.java</b>. All the code is in the process log above; it works as-is once the ports are right.</p>
+
+    <h3>4. Test each layer as you go</h3>
+    <pre class="code"><span class="c"># server alive?</span>
+curl http://localhost:8080/ping
+
+<span class="c"># cache working? (watch the IntelliJ CONSOLE tab, not the terminal)</span>
+curl -i http://localhost:8080/YOURCODE   <span class="c"># CACHE MISS, then CACHE HIT on repeat</span>
+
+<span class="c"># rate limiter working? 10x 200 then 429s</span>
+<span class="k">for</span> i <span class="k">in</span> {1..15}; <span class="k">do</span> curl <span class="n">-s</span> <span class="n">-o</span> /dev/null <span class="n">-w</span> <span class="s">"%{http_code}\n"</span> http://localhost:8080/ping; <span class="k">done</span></pre>
+
+    <h3>5. Load test with redirects disabled</h3>
+    <p>hey follows 302s by default and will hammer the destination site instead of your server. Always pass <code class="inline">-disable-redirects</code>:</p>
+    <pre class="code">hey <span class="n">-n</span> 2000 <span class="n">-c</span> 50 <span class="n">-disable-redirects</span> http://localhost:8080/$CODE</pre>
+
+    <h3>6. Deploy to Railway the right way</h3>
+    <p>Push to GitHub → Railway → New Project → Deploy from GitHub repo → add Postgres + Redis services. <b>Do not</b> put connection details in <code class="inline">application.properties</code>, strip it down to just:</p>
+    <pre class="code">spring.application.name=<span class="s">shortener</span>
+spring.jpa.hibernate.ddl-auto=<span class="s">update</span></pre>
+    <p>…and set the six <code class="inline">SPRING_DATASOURCE_*</code> / <code class="inline">SPRING_DATA_REDIS_*</code> variables in the <b>app service's own Variables tab</b>, building the JDBC URL from Railway's Postgres pieces (full table in the deployment step above). Never commit credentials; regenerate any password that ever touched a public repo. Generate a domain under Settings → Networking and <code class="inline">curl -i https://your-url/ping</code> to confirm it's live.</p>
+  </div>
+
+</div>
+</body>
+</html>
+
