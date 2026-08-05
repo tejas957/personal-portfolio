@@ -5,7 +5,7 @@ import tailwind from '@astrojs/tailwind';
 // If your repo is github.com/yourname/yourname.github.io, set base: '/'.
 // If your repo is github.com/yourname/portfolio, set base: '/portfolio'.
 export default defineConfig({
-  site: 'https://yourname.github.io',
-  base: '/',
+  site: 'https://tejas957.github.io/personal-portfolio',
+  base: '/personal-portfolio',
   integrations: [tailwind()],
 });
