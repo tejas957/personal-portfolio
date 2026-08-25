@@ -10,7 +10,7 @@ const role = 'CS Student';
 const school = 'B.S. Computer Science, University of Texas Austin · Class of 2029';
 //TO-DO
 const blurb =
-  "CS student at UT Austin who turns whatever's in front of me into a build problem: systems programming, computer vision, applied AI. I've written a Unix-style shell in C, a CV pipeline that turns floorplans into cost estimates, and an AI tool that clones and edits live websites through natural language. If something's slow, manual, or annoying, my instinct is to go write code until it isn't.";
+  "CS student at UT Austin with experience in systems programming, computer vision, and applied AI including C/C++, Python, JavaScript, REST APIs, and LLM-based tooling. Motivated by building things that solve real, practical problems";
 
 const links = [
 //Resume TO-DO
@@ -21,6 +21,15 @@ const links = [
 ];
 
 const projects = [
+ {
+    hash: '08aa34c',
+    date: 'In Progress',
+    subject: 'AI Stock Signal Research Agent',
+    body: 'Agentic AI system that fetches price/news data for a stock ticker, computes technical indicators, and has an LLM synthesize a bullish/bearish/neutral stance with a confidence score, abstaining when confidence is low. Backtested against historical price data with full run logging, deployed behind a FastAPI endpoint. A research/signal-flagging tool.',
+    tags: ['Python', 'FastAPI', 'LangGraph', 'LLM Agents'],
+    demo: 'https://github.com/tejas957/tradescout.git',
+    repo: 'https://github.com/tejas957/tradescout.git',
+  },
   {
     hash: '61f78cf',
     date: '2026-08',
@@ -44,10 +53,14 @@ const projects = [
 ];
 
 const skills = {
-  Languages: ['Python', 'Go', 'TypeScript', 'C', 'Rust (learning)'],
-  Systems: ['Linux internals', 'Networking', 'Distributed systems', 'Databases'],
-  Tools: ['Docker', 'Git', 'PostgreSQL', 'gRPC', 'CI/CD'],
+  Languages: ['Java', 'Python', 'C++', 'C', 'JavaScript', 'ARM64 Assembly'],
+  Systems: ['Linux internals', 'POSIX system calls (fork, exec, wait)', 'Computer architecture', 'Process control & piping/redirection'],
+  Tools: ['Docker', 'Git', 'PostgreSQL', 'Redis', 'Railway', 'Playwright', 'REST APIs', 'Claude API (LLM integration)'],
+  Web: ['Node.js', 'React', 'Spring Boot'],
+  'AI/CV': ['OCR/Computer Vision tooling', 'Speech-to-Text APIs'],
 };
+
+
 // ---- end editable data ----
 ---
 <Base title={`${name} — Portfolio`}>
@@ -157,7 +170,7 @@ const skills = {
       <div class="mx-auto max-w-4xl px-6 py-16">
         <h2 class="font-display text-2xl font-semibold">Get in touch</h2>
         <p class="mt-3 max-w-md text-sm leading-relaxed text-paper/80">
-          Open to internships and collaboration on systems-y projects. The fastest way to reach me is email.
+          Open to internships and collaboration on projects. The fastest way to reach me is email.
         </p>
         <div class="mt-6 flex flex-wrap gap-4 font-mono text-sm">
           {links.map((l) => (
