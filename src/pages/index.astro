@@ -10,7 +10,7 @@ const role = 'CS Student';
 const school = 'B.S. Computer Science, University of Texas Austin · Class of 2029';
 //TO-DO
 const blurb =
-  "CS student at UT Austin with experience in systems programming, computer vision, and applied AI including C/C++, Python, JavaScript, REST APIs, and LLM-based tooling. Motivated by building things that solve real, practical problems";
+  "CS student at UT Austin with experience in systems programming, computer vision, and applied AI including C, Python, Java, JavaScript/TypeScript, REST APIs, and LLM-based tooling. Motivated by building things that solve real, practical problems";
 
 const links = [
 //Resume TO-DO
@@ -21,6 +21,29 @@ const links = [
 ];
 
 const projects = [
+  {
+    hash: '2e887e4',
+    date: '2026-10',
+    subject: 'Clinic Autopilot',
+    body: 'Marketing autopilot for small medical clinics. An LLM drafts a week of on-brand posts and captions from each clinic\'s profile, renders branded slide images, and auto-publishes to Instagram and Facebook through the Meta Graph API on a scheduler. Piloted at 3 clinics, with no patient data stored.',
+    tags: ['TypeScript', 'Next.js', 'PostgreSQL', 'Claude API', 'Meta Graph API'],
+  },
+  {
+    hash: '39700c2',
+    date: '2026-09',
+    subject: 'TA Studio (UT Austin CS Department)',
+    body: 'All-in-one TA scheduling tool for the UT Austin CS department, covering faculty rankings, TA assignments, HR exports and email in one place. A Node.js scraper syncs data from the legacy TA app, and a Claude-powered Ask box routes staff requests. Being deployed on UTCS servers to cut email and spreadsheet work by 50%.',
+    tags: ['JavaScript', 'Node.js', 'Cheerio', 'Claude API'],
+    repo: 'https://github.com/tejas957/ta-studio-demo',
+  },
+  {
+    hash: '6c2c3c0',
+    date: '2026-09',
+    subject: 'Wholesale Catalog Website',
+    body: 'Catalog site generator for a wholesale distributor. Builds category, product and brand pages from spreadsheet files, merges new manufacturer catalogs without duplicates, and adds search and a quote-request list.',
+    tags: ['Astro', 'Pagefind', 'GitHub Actions'],
+    repo: 'https://github.com/tejas957/catalog-site',
+  },
  {
     hash: '08aa34c',
     date: 'In Progress',
@@ -40,6 +63,13 @@ const projects = [
     repo: 'https://github.com/tejas957/site-cloner.git',
   },
   {
+    hash: 'e982ed9',
+    date: '2026-07',
+    subject: 'AI Clinical Note Generator',
+    body: 'Prototype React tool that turns photographed intake forms (OCR) and live dictation (Web Speech API) into structured clinical notes, using few-shot Claude Sonnet prompts with safety rules.',
+    tags: ['React', 'OCR', 'Speech-to-Text', 'Claude API'],
+  },
+  {
 
     hash: 'a4d7709',
     date: '2026-07',
@@ -50,14 +80,22 @@ const projects = [
     repo: 'https://github.com/tejas957/shortener.git',
     blogSlug: 'url-shortener-blog', // matches a slug in src/data/posts.js — omit this line if there's no post
   },
+  {
+    hash: 'dd90bce',
+    date: '2026-06',
+    subject: 'Construction Cost Quoting (RPG Homes and Distribution)',
+    body: 'Python/PyPDF2 pipeline that extracts dimensions and layouts from floor plan PDFs and uses the Claude API to match them against a materials cost library, cutting quoting time from 3+ hours to 10-15 minutes per project.',
+    tags: ['Python', 'PyPDF2', 'Claude API'],
+    repo: 'https://github.com/tejas957/construction-material-library',
+  },
 ];
 
 const skills = {
-  Languages: ['Java', 'Python', 'C++', 'C', 'JavaScript', 'ARM64 Assembly'],
+  Languages: ['Python', 'Java', 'C', 'JavaScript/TypeScript', 'SQL', 'ARM64 Assembly'],
   Systems: ['Linux internals', 'POSIX system calls (fork, exec, wait)', 'Computer architecture', 'Process control & piping/redirection'],
-  Tools: ['Docker', 'Git', 'PostgreSQL', 'Redis', 'Railway', 'Playwright', 'REST APIs', 'Claude API (LLM integration)'],
-  Web: ['Node.js', 'React', 'Spring Boot'],
-  'AI/CV': ['OCR/Computer Vision tooling', 'Speech-to-Text APIs'],
+  Tools: ['Docker', 'Git', 'GitHub Actions', 'PostgreSQL', 'Redis', 'AWS (EC2)', 'Playwright', 'REST APIs', 'Claude API (LLM integration)'],
+  Web: ['React', 'Next.js', 'Node.js', 'Spring Boot', 'Meta Graph API'],
+  'AI': ['LLM integration', 'Prompt engineering', 'OCR', 'Speech-to-Text APIs'],
 };
 
 
@@ -136,8 +174,8 @@ const skills = {
                 ))}
               </div>
               <div class="mt-4 flex gap-4 font-mono text-xs">
-                <a href={p.demo} class="text-amber hover:underline">demo →</a>
-                <a href={p.repo} class="text-muted hover:text-paper hover:underline">source →</a>
+                {p.demo && <a href={p.demo} class="text-amber hover:underline">demo →</a>}
+                {p.repo && <a href={p.repo} class="text-muted hover:text-paper hover:underline">source →</a>}
                 {p.blogSlug && (
                   <a href={`${base}blog/${p.blogSlug}`} class="text-teal hover:underline">writeup →</a>
                 )}
