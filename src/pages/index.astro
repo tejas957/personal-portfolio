@@ -22,11 +22,19 @@ const links = [
 
 const projects = [
   {
+    date: '2026-11',
+    subject: 'JointScore',
+    body: 'Native iPhone app that gives and scores the KOOS, JR and HOOS, JR knee and hip surveys, keeps every record on the phone, and exports PDF reports. Agent mode reads each question aloud, listens with on-device speech recognition, and fills in the answer, using a natural voice pre-recorded with the open Kokoro model.',
+    tags: ['Swift', 'SwiftUI', 'SwiftData', 'Speech'],
+    blogSlug: 'jointscore-build-log',
+  },
+  {
     hash: '2e887e4',
     date: '2026-10',
     subject: 'Clinic Autopilot',
     body: 'Marketing autopilot for small medical clinics. An LLM drafts a week of on-brand posts and captions from each clinic\'s profile, renders branded slide images, and auto-publishes to Instagram and Facebook through the Meta Graph API on a scheduler. Piloted at 3 clinics, with no patient data stored.',
     tags: ['TypeScript', 'Next.js', 'PostgreSQL', 'Claude API', 'Meta Graph API'],
+    blogSlug: 'clinic-autopilot-build-log',
   },
   {
     hash: '39700c2',
@@ -35,6 +43,7 @@ const projects = [
     body: 'All-in-one TA scheduling tool for the UT Austin CS department, covering faculty rankings, TA assignments, HR exports and email in one place. A Node.js scraper syncs data from the legacy TA app, and a Claude-powered Ask box routes staff requests. Being deployed on UTCS servers to cut email and spreadsheet work by 50%.',
     tags: ['JavaScript', 'Node.js', 'Cheerio', 'Claude API'],
     repo: 'https://github.com/tejas957/ta-studio-demo',
+    blogSlug: 'ta-studio-build-log',
   },
   {
     hash: '6c2c3c0',
@@ -157,7 +166,7 @@ const skills = {
                 aria-hidden="true"
               ></span>
               <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 font-mono text-xs text-muted">
-                <span class="text-teal">commit {p.hash}</span>
+                {p.hash && <span class="text-teal">commit {p.hash}</span>}
                 <span>{p.date}</span>
               </div>
               <h3 class="mt-2 font-display text-xl font-semibold text-paper">

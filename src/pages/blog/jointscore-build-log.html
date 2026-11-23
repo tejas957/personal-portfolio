@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JointScore · Build Log</title>
+<style>
+  :root{
+    --purple:#c77df2;
+    --purple-soft:#e3b8f7;
+    --purple-pale:#faf3fe;
+    --ink:#111114;
+    --gray:#6b6b76;
+    --card-border:#e3b8f7;
+    --inner-border:#111114;
+    --code-bg:#171320;
+    --code-text:#e8e3f2;
+    --code-key:#c99ef7;   /* keywords / annotations */
+    --code-str:#9ae6a8;   /* strings */
+    --code-com:#7d7691;   /* comments */
+    --code-num:#f2c078;   /* numbers / flags */
+    --bug-border:#f0a3a3;
+    --bug-bg:#fdf4f4;
+    --fix-border:#9ad3a8;
+    --fix-bg:#f3faf4;
+    --note-border:#f2cf8a;
+    --note-bg:#fdf9f0;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);
+    background:#12141c;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:680px;margin:0 auto;padding:48px 20px 96px;}
+  h1.post-title{font-size:34px;line-height:1.15;letter-spacing:-0.02em;margin:0 0 10px;font-weight:800;}
+  p.post-sub{color:var(--gray);font-size:16px;margin:0 0 40px;}
+  .banner{
+    background:var(--purple);
+    border:2px solid var(--ink);
+    border-radius:var(--radius);
+    padding:18px 24px;
+    margin:0 0 28px;
+  }
+  .banner span{color:#fff;font-size:24px;font-weight:800;letter-spacing:0.02em;}
+  .card{
+    border:2px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:24px;
+    margin:0 0 28px;
+    background:#fff;
+  }
+  .card.inner-dark{border:2px solid var(--inner-border);}
+  .eyebrow{
+    color:var(--purple);
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    margin:0 0 6px;
+  }
+  .card h2{font-size:24px;margin:0 0 12px;font-weight:800;letter-spacing:-0.01em;}
+  .card h3{font-size:18px;margin:22px 0 8px;font-weight:700;}
+  .card p{margin:0 0 14px;font-size:16px;}
+  .card p:last-child{margin-bottom:0;}
+  .card ul{margin:0 0 14px;padding-left:22px;}
+  .card li{margin:0 0 6px;}
+  .tool-list li b{font-weight:700;}
+  .skill-tag{display:inline-block;background:var(--purple-pale);border:1px solid var(--purple-soft);color:#8a3fbf;border-radius:999px;font-size:12px;font-weight:600;padding:1px 10px;margin-left:6px;vertical-align:middle;}
+  .quote{
+    border-left:4px solid var(--purple);
+    background:var(--purple-pale);
+    border-radius:8px;
+    padding:14px 18px;
+    margin:18px 0 0;
+    font-style:italic;
+  }
+  .quote .attr{display:block;font-style:normal;color:var(--gray);font-size:14px;margin-top:8px;}
+  /* jump button */
+  .jump-btn{
+    display:block;
+    text-align:center;
+    background:var(--purple);
+    color:#fff;
+    border:2px solid var(--ink);
+    border-radius:var(--radius);
+    padding:16px 20px;
+    font-size:18px;
+    font-weight:800;
+    text-decoration:none;
+    margin:0 0 12px;
+  }
+  .jump-btn:hover{filter:brightness(0.95);}
+  .or-line{text-align:center;color:var(--gray);font-size:15px;margin:0 0 40px;}
+  /* code blocks */
+  pre.code{
+    background:var(--code-bg);
+    color:var(--code-text);
+    border-radius:10px;
+    padding:16px 18px;
+    overflow-x:auto;
+    font-family:"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:13px;
+    line-height:1.55;
+    margin:0 0 14px;
+  }
+  pre.code .file{display:block;color:var(--code-com);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px;}
+  .k{color:var(--code-key);}   /* keyword/annotation */
+  .s{color:var(--code-str);}   /* string */
+  .c{color:var(--code-com);}   /* comment */
+  .n{color:var(--code-num);}   /* number/flag */
+  code.inline{
+    background:var(--purple-pale);
+    border:1px solid var(--purple-soft);
+    border-radius:6px;
+    padding:1px 6px;
+    font-family:"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:13.5px;
+    color:#7a2fb5;
+  }
+  /* side by side code + explanation on wide screens */
+  .split{display:flex;gap:16px;align-items:stretch;flex-wrap:wrap;margin:0 0 14px;}
+  .split>.code-col{flex:1 1 340px;min-width:0;}
+  .split>.code-col pre.code{height:100%;margin:0;}
+  .split>.text-col{flex:1 1 240px;min-width:220px;}
+  .split>.text-col p{margin:0 0 12px;font-size:15px;}
+  /* callouts */
+  .callout{border-radius:10px;padding:14px 18px;margin:0 0 14px;border:2px solid;}
+  .callout .label{display:block;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;}
+  .callout p{margin:0 0 10px;font-size:15px;}
+  .callout p:last-child{margin-bottom:0;}
+  .callout pre.code{margin:10px 0;}
+  .bug{border-color:var(--bug-border);background:var(--bug-bg);}
+  .bug .label{color:#c04747;}
+  .fix{border-color:var(--fix-border);background:var(--fix-bg);}
+  .fix .label{color:#2f8a4c;}
+  .note{border-color:var(--note-border);background:var(--note-bg);}
+  .note .label{color:#b07e1f;}
+  /* flow diagram */
+  .flow{display:flex;flex-direction:column;gap:6px;margin:18px 0 0;}
+  .flow .step{border:2px solid var(--ink);border-radius:10px;padding:10px 14px;font-size:14.5px;background:#fff;}
+  .flow .arrow{text-align:center;color:var(--purple);font-weight:800;line-height:1;}
+  .divider{border:none;border-top:1px solid #e6e6ea;margin:40px 0;}
+  table.vars{width:100%;border-collapse:collapse;font-size:13px;margin:0 0 14px;}
+  table.vars th,table.vars td{border:1px solid var(--purple-soft);padding:8px 10px;text-align:left;vertical-align:top;word-break:break-all;}
+  table.vars th{background:var(--purple-pale);font-weight:700;}
+  table.vars td code{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12px;}
+  html{scroll-behavior:smooth;}
+  @media (max-width:640px){
+    h1.post-title{font-size:28px;}
+    .split{flex-direction:column;}
+  }
+  table.vars.plain th,table.vars.plain td{word-break:normal;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="banner"><span>THE BUILD LOG</span></div>
+
+  <!-- BACKGROUND / INSPO -->
+  <div class="card">
+    <p class="eyebrow">Background / Inspo</p>
+    <h2>Why this project</h2>
+    <p>I spent a year doing hip and knee replacement outcomes research at UT Southwestern. Outcomes like that are tracked with short patient surveys. KOOS, JR is the knee one (7 questions) and HOOS, JR is the hip one (6 questions). I wanted an iPhone app that gives either survey, scores it, and keeps every score on the phone. Then I wanted it to be able to read the questions out loud and fill in the answers by itself.</p>
+  </div>
+
+  <!-- ORIGINAL IDEA -->
+  <div class="card">
+    <p class="eyebrow">The Original Idea</p>
+    <h2>What I set out to build</h2>
+    <p>Enter the patient, pick the knee or hip survey, answer it by hand or by voice, and get the official score. Save it on the phone and track it over time.</p>
+    <div class="flow">
+      <div class="step">Patient name, optional MRN, side, surgery date and collection date</div>
+      <div class="arrow">↓</div>
+      <div class="step">Manual entry, or Agent mode where the app reads each question and listens</div>
+      <div class="arrow">↓</div>
+      <div class="step">Raw sum converted to the 0 to 100 score with the official HSS tables</div>
+      <div class="arrow">↓</div>
+      <div class="step">Saved on the phone, with a trend and change from the pre-op baseline</div>
+      <div class="arrow">↓</div>
+      <div class="step">PDF reports and CSV export</div>
+    </div>
+  </div>
+
+  <!-- TOOLS -->
+  <div class="card">
+    <p class="eyebrow">AI Model + Tools</p>
+    <h2>What I'm working with</h2>
+    <p>Using <b>Claude</b> as my AI pair the whole way through.</p>
+    <ul class="tool-list">
+      <li><b>SwiftUI</b> builds the screens of the iPhone app.</li>
+      <li><b>SwiftData</b> stores every score on the phone. Nothing goes to a server.</li>
+      <li><b>Xcode</b> is where the app actually gets built and run on my iPhone.</li>
+      <li><b>AVSpeechSynthesizer</b> is Apple's built in text to speech.</li>
+      <li><b>SFSpeechRecognizer</b> is Apple's speech recognition, on the device where the phone supports it.</li>
+      <li><b>Kokoro-82M</b> is an open source voice model (Apache-2.0) I used to pre-record a natural voice.</li>
+    </ul>
+    <div class="callout note">
+      <span class="label">Note · The weird part</span>
+      <p>Claude never compiled or ran this app. iPhone apps only build in Xcode on a Mac, and Claude was writing code in a Linux workspace where it could only check the syntax. So every round went the same way. Claude writes the change, I build it in Xcode, and I paste the red errors back.</p>
+    </div>
+  </div>
+
+  <a class="jump-btn" href="#final-build">See the final build ↓</a>
+  <p class="or-line">…or follow along to see my process, explanations, debugging and thoughts 👇</p>
+
+  <hr class="divider">
+
+  <!-- ============ PROCESS ============ -->
+
+  <div class="card">
+    <p class="eyebrow">Prototype</p>
+    <h2>Step 1 · A web app first</h2>
+    <p>The first version was a web app with New score, Records and Guide tabs. It saved records to a cloud store tied to my Claude account. I wanted the data on my device instead, so it switched to saving in the browser with PDF reports.</p>
+    <p>That still wasn't right. Browser storage can get wiped with website data, and it can't go on the App Store. So the same weekend I asked for the real thing, a native iPhone app.</p>
+  </div>
+
+  <div class="card">
+    <p class="eyebrow">Going Native</p>
+    <h2>Step 2 · First build in Xcode</h2>
+    <p>Claude wrote the app as 8 Swift files with a step by step Xcode README. I made a new Xcode project, dropped the files in and hit run.</p>
+
+    <div class="callout bug">
+      <span class="label">Bug #1 · No UIKit</span>
+      <pre class="code">Reports.swift: No such module 'UIKit'</pre>
+      <p>UIKit is the iPhone's UI library. Xcode had made a multiplatform project (iPhone, Mac and Vision Pro) and was building for "My Mac," where UIKit doesn't exist.</p>
+    </div>
+    <div class="callout fix">
+      <span class="label">The Fix</span>
+      <p>Limit the target to iPhone and iPad and pick my iPhone as the run destination, not My Mac. The original project settings got backed up first as <code class="inline">project.pbxproj.backup</code>.</p>
+    </div>
+
+    <div class="callout bug">
+      <span class="label">Bug #2 · Only the newest iPhones</span>
+      <p>The new project defaulted to a minimum of iOS 26.5, which would lock out most phones.</p>
+    </div>
+    <div class="callout fix">
+      <span class="label">The Fix</span>
+      <p>Lowered it to iOS 17.0. That's the lowest it can go, because SwiftData needs 17.</p>
+    </div>
+    <div class="callout note">
+      <span class="label">Note · Developer Mode</span>
+      <p>I asked if turning on Developer Mode makes my phone easier to hack. There's no meaningful remote risk, and you need it while using a free Apple ID. The catch is that apps installed that way expire after 7 days. Hitting run in Xcode again renews it without losing records.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="eyebrow">Agent Mode</p>
+    <h2>Step 3 · Making it listen</h2>
+    <p>Agent mode is the part I was most excited about. The clinician hands the phone to the patient, the app reads each question out loud, listens, and fills the answer in on the form. I didn't want an AI model guessing what patients meant, so the answers go through a rule based phrase table that's predictable and testable.</p>
+
+    <div class="callout bug">
+      <span class="label">Bug #3 · Six errors at once</span>
+      <pre class="code">Type 'VoiceInterviewer' does not conform to protocol 'ObservableObject'
+Initializer 'init(wrappedValue:)' is not available ...   (x5)</pre>
+      <p>This Xcode project makes every file import what it uses. <code class="inline">@Published</code> comes from Combine, and the file never imported Combine.</p>
+    </div>
+    <div class="callout fix">
+      <span class="label">The Fix</span>
+      <p>One line.</p>
+<pre class="code"><span class="file">VoiceInterviewer.swift (top of file)</span><span class="k">import</span> SwiftUI
+<span class="k">import</span> Combine   <span class="c">// @Published lives here</span></pre>
+      <p>Since the earlier UIKit error came from the same strict rule, I also added <code class="inline">import Symbols</code> to the screen with the pulsing mic icon before it could break.</p>
+    </div>
+
+    <div class="callout bug">
+      <span class="label">Bug #4 · My fixes kept disappearing</span>
+      <p>The files were fixed on disk, but Xcode kept showing the old versions. When it asked, I picked "Keep Xcode Version," which wrote the old code right back over the fix.</p>
+    </div>
+    <div class="callout fix">
+      <span class="label">The Fix</span>
+      <p>Pick Read From Disk (or Revert), or quit and reopen Xcode. Never "Keep Xcode Version." To check it updated, look at the first lines of the changed files.</p>
+    </div>
+
+    <div class="callout bug">
+      <span class="label">Bug #5 · "Kind of satisfied"</span>
+      <p>The parser read "kind of satisfied" as Satisfied, because "satisfied" matched last in the phrase table.</p>
+    </div>
+    <div class="callout fix">
+      <span class="label">The Fix</span>
+      <p>This one got caught in a test run of the parser before it ever shipped. The phrase rules now map it to Somewhat satisfied. The parser also uses the last answer mentioned, so "mild, no actually moderate" becomes moderate. It refuses to guess on "not severe," asks again after an unclear reply, and leaves the question blank after 3 tries.</p>
+    </div>
+
+    <div class="callout bug">
+      <span class="label">Bug #6 · It heard itself</span>
+      <p>The phone's speaker fed back into the mic, so the app could transcribe its own question as an answer.</p>
+    </div>
+    <div class="callout fix">
+      <span class="label">The Fix</span>
+      <p>The app never listens while it's talking. It speaks, stops, then listens.</p>
+    </div>
+
+    <div class="callout bug">
+      <span class="label">Bug #7 · Silent on mute</span>
+      <p>With the ring switch on silent, the voice didn't play at all.</p>
+    </div>
+    <div class="callout fix">
+      <span class="label">The Fix</span>
+<pre class="code"><span class="k">try</span> AVAudioSession.sharedInstance()
+    .setCategory(.playback, mode: .spokenAudio)</pre>
+      <p>The playback category tells iOS this audio is the point of the app, so it plays even with the switch on silent.</p>
+    </div>
+    <div class="callout note">
+      <span class="label">⚠️ The icon that wouldn't change</span>
+      <p>iOS caches app icons. To see a new one, delete the app and run it again. That also deletes the test records, so don't do it with real data on there.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="eyebrow">The Voice Saga</p>
+    <h2>Step 4 · A voice that doesn't sound sad</h2>
+    <p><b>v1 · Apple's default voice.</b> It worked, but it sounded robotic.</p>
+    <p><b>v2 · The best Apple voice on the phone.</b> The app picks the highest quality English voice installed, speaks sentence by sentence with short pauses, and varies its confirmations ("Okay, moderate." "Got it, mild."). It also got a voice picker and a Preview button. It was better, but the big improvement needed each user to download a 100 to 400 MB Premium voice in Settings. I still thought it sounded sad and robotic.</p>
+    <p><b>v3 · An open source human sounding voice.</b> It had to be free, allowed for commercial use, and small enough for a phone.</p>
+    <table class="vars plain">
+      <tr><th>Option</th><th>License</th><th>Verdict</th></tr>
+      <tr><td>Kokoro-82M</td><td>Apache-2.0</td><td>Picked. Best small open model, free for commercial use</td></tr>
+      <tr><td>Chatterbox</td><td>MIT</td><td>More expressive, too heavy for a phone</td></tr>
+      <tr><td>Orpheus, Dia</td><td>Open</td><td>Too large for a phone</td></tr>
+      <tr><td>Fish Audio S2 Pro</td><td>Paid commercial license</td><td>Not free</td></tr>
+      <tr><td>F5-TTS, Higgs</td><td>Non-commercial</td><td>Can't be sold</td></tr>
+    </table>
+    <p>Running Kokoro on the phone would add about 80 MB and need iOS 18. But everything the agent says is fixed text. There are 7 knee questions, 6 hip questions, a few prompts, the satisfaction question and some confirmations. So instead of generating speech on the phone, every sentence got rendered once on a computer and shipped as audio.</p>
+    <ul>
+      <li>Two voices, a female default and a male option, trimmed and compressed to about 2.8 MB total.</li>
+      <li>Each clip is named after a hash of its sentence, like <code class="inline">f_&lt;hash&gt;.m4a</code>. Before speaking, the app hashes the sentence and plays the matching file.</li>
+      <li>No match means Apple's voice reads that line, so nothing ever breaks.</li>
+    </ul>
+    <div class="callout note">
+      <span class="label">⚠️ Rule for changing any wording</span>
+      <p>If the app's text changes, the clip has to be regenerated with <code class="inline">make_clips.py</code>. Otherwise that line quietly falls back to the Apple voice.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ============ FINAL BUILD ============ -->
+  <div id="final-build"></div>
+  <div class="banner"><span>THE FINAL BUILD</span></div>
+
+  <div class="card">
+    <p class="eyebrow">Final Product</p>
+    <h2>What the finished project looks like</h2>
+    <p>A native iPhone app that gives and scores KOOS, JR and HOOS, JR, works out the time point from the dates, and asks a separate satisfaction question after surgery that never touches the score. Every record stays on the phone with search, edit, trends and change from baseline. It exports a one visit survey report PDF, a multi visit patient summary, an all patients PDF and a CSV. Agent mode interviews the patient in a natural recorded voice.</p>
+    <p>The natural voice update still needs its first build on a real iPhone, and TestFlight is the next step after the paid Apple Developer account.</p>
+    <div class="callout note">
+      <span class="label">Note · Permission before selling</span>
+      <p>HSS calls these surveys free to use, but says they can't be altered without written permission, and a voice version is different from the paper form. So I'm asking HSS for written permission before anything goes on the App Store.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="eyebrow">The Clean Path</p>
+    <h2>How I'd do it again with zero snags</h2>
+    <p>This is the setup that would have skipped every error I hit.</p>
+
+    <h3>1. Set up the Xcode project right</h3>
+    <p>Make an iOS app project, not multiplatform, and don't pick SwiftData as the storage option (the app sets up its own). Delete Xcode's template <code class="inline">ContentView</code> before adding the files. Set the minimum to iOS 17 and pick your iPhone, not My Mac, as the run destination.</p>
+
+    <h3>2. Import what every file uses</h3>
+    <p>UIKit for colors and PDFs, Combine anywhere you use <code class="inline">@Published</code>, Symbols for animated icons.</p>
+
+    <h3>3. Always Read From Disk</h3>
+    <p>When files change outside Xcode, never pick "Keep Xcode Version."</p>
+
+    <h3>4. Design the voice loop first</h3>
+    <p>Never listen while speaking, use the playback audio session so it works on silent, and parse answers with rules you can test.</p>
+
+    <h3>5. Pre-record anything with fixed wording</h3>
+    <p>If the app only ever says set sentences, render them once with an open model and look them up by hash, with the system voice as a fallback.</p>
+
+    <h3>6. Get permission early</h3>
+    <p>If you build on a published survey, ask the owner before you sell it.</p>
+  </div>
+
+</div>
+</body>
+</html>
